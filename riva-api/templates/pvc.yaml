@@ -1,0 +1,22 @@
+{{ if .Values.persistentVolumeClaim.usePVC }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.persistentVolumeClaim.workdirClaimName }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+  {{- if .Values.persistentVolumeClaim.keepPVC }}
+    "helm.sh/resource-policy": keep
+  {{- end }}
+  labels:
+    name: {{ .Values.persistentVolumeClaim.workdirClaimName }}
+spec:
+{{- if .Values.persistentVolumeClaim.storageClassName }}
+  storageClassName: {{ .Values.persistentVolumeClaim.storageClassName }}
+{{- end }}
+  accessModes:
+  - {{ .Values.persistentVolumeClaim.storageAccessMode | default "ReadWriteOnce" }}
+  resources:
+    requests:
+      storage: {{ .Values.persistentVolumeClaim.storageSize | default "500Mi" }}
+{{ end }}

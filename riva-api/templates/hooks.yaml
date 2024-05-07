@@ -1,0 +1,72 @@
+
+{{- $root := . }}
+
+{{- if .Values.modelRepoGenerator.clearAllRMIRSAndModels }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "riva-server.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "riva-server.name" . }}
+    chart: {{ template "riva-server.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    metadata:
+      name: "{{ .Release.Name }}"
+      labels:
+        app: {{ template "riva-server.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      {{- if .Values.persistentVolumeClaim.usePVC }}
+      securityContext:
+        runAsGroup: 1000
+        runAsUser: 1000
+      {{- end }}
+      restartPolicy: Never
+      imagePullSecrets:
+        - name: {{ .Values.modelRepoGenerator.imagePullSecret }}
+      containers:
+      - name: riva-model-clean
+        image: {{ template "servicemaker_image" . }}
+        imagePullPolicy: {{ .Values.modelRepoGenerator.pullPolicy }}
+        command: ["download_and_deploy_ngc_models"]
+        args:
+          {{- if .Values.modelRepoGenerator.clearAllRMIRSAndModels }}
+          - "-R"
+          {{- end }}
+        volumeMounts:
+        - name: artifact-volume
+          mountPath: /rmir
+        - name: workdir
+          mountPath: /data/
+
+      volumes:
+        - name: artifact-volume
+          {{- if .Values.persistentVolumeClaim.usePVC }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistentVolumeClaim.artifactClaimName }}
+          {{- else}}
+          {{- if .Values.modelRepoGenerator.artifactDeployVolume }}
+{{ tpl (toYaml .Values.modelRepoGenerator.artifactDeployVolume | indent 10) . }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+          {{- end}}
+        - name: workdir
+          {{- if .Values.persistentVolumeClaim.usePVC }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistentVolumeClaim.workdirClaimName }}
+          {{- else}}
+          {{- if .Values.modelRepoGenerator.modelDeployVolume }}
+{{ tpl (toYaml .Values.modelRepoGenerator.modelDeployVolume | indent 10) . }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+          {{- end}}
+{{- end }}

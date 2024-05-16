@@ -111,7 +111,7 @@ modelRepoGenerator:
       ### Streaming w/ CPU decoder, best latency configuration
       # - nvidia/riva/rmir_asr_conformer_en_us_str:2.14.0
       ### Offline w/ CPU decoder
-      # - nvidia/riva/rmir_asr_conformer_en_us_ofl:2.14.0
+      - nvidia/riva/rmir_asr_conformer_en_us_ofl:2.14.0
 
       ### Speaker diarization model
       # - nvidia/riva/rmir_diarizer_offline:2.14.0
@@ -129,7 +129,7 @@ modelRepoGenerator:
       ### Multi speaker zh-CN model IPA
       # - nvidia/riva/rmir_tts_fastpitch_hifigan_zh_cn_ipa:2.14.0
       ### Multi speaker es-US model IPA
-      # - nvidia/riva/rmir_tts_fastpitch_hifigan_es_us_ipa:2.14.0
+      - nvidia/riva/rmir_tts_fastpitch_hifigan_es_us_ipa:2.14.0
       ### Single speaker es-ES F model IPA
       # - nvidia/riva/rmir_tts_fastpitch_hifigan_es_es_f_ipa:2.14.0
       ### Single speaker es-ES M model IPA

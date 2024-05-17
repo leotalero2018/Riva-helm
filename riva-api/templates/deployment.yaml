@@ -149,6 +149,12 @@ spec:
       {{- if (ne (len .Values.modelRepoGenerator.ngcModelConfigs) 0) }}
       initContainers:
         {{- if and (.Values.compatGpuCheckTimeout) (not .Values.modelRepoGenerator.useSeparateTriton) }}
+        - name: init-delete-models
+              image: busybox
+              command: [ 'sh', '-c', 'rm -rf /data/models/riva-trt-conformer-en-US-asr-offline-am-streaming-offline /data/models/conformer-en-US-asr-offline-feature-extractor-streaming-offline /data/models/conformer-en-US-asr-offline-endpointing-streaming-offline' ]
+              volumeMounts:
+                - name: workdir
+                  mountPath: /data/models
         - name: riva-gpu-check
           image: {{ template "servicemaker_image" . }}
           imagePullPolicy: {{ .Values.modelRepoGenerator.pullPolicy }}

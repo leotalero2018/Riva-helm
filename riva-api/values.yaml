@@ -53,8 +53,8 @@ rivaEnterprise:
 ngcCredentials:
   registry: nvcr.io
   username: $oauthtoken
-  password: "ZWkwcnVxNHBlZGlidWZlaHNqZGRzMjY2bDE6ZjVhMTI0NGMtYWI4Zi00YzVjLThmODctYWRlNDE5NmY2NGE5"
-  email: "leo.20waw@gmail.com"
+  password: "bmw2cHE4M280cmg1N2Rpc2NucWVudXNwbXM6OGE3MmVmMjAtODNkOS00MDA4LTk5OWMtODJhNmU2MGVhMjE2"
+#  email: ""
 
 # compatGpuCheckTimeout timeout for GPU ready check.
 # Set to empty to disable GPU availablity check.
@@ -76,9 +76,9 @@ modelRepoGenerator:
   # force redownload of artifacts
   overwriteRMIRS: false
   # rebuild inference engines
-  overwriteModels: true
+  overwriteModels: false
   # clear artifacts and models before downloading and deploying
-  clearAllRMIRSAndModels: true
+  clearAllRMIRSAndModels: false
 
   # useSeparateTriton when false : Riva server and single Triton server are run in single container
   # useSeparateTriton when true : Riva server and Triton server(s) are deployed in separate pods

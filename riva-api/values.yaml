@@ -76,7 +76,7 @@ modelRepoGenerator:
   # force redownload of artifacts
   overwriteRMIRS: false
   # rebuild inference engines
-  overwriteModels: false
+  overwriteModels: true
   # clear artifacts and models before downloading and deploying
   clearAllRMIRSAndModels: true
 

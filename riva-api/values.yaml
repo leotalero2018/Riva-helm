@@ -78,7 +78,7 @@ modelRepoGenerator:
   # rebuild inference engines
   overwriteModels: false
   # clear artifacts and models before downloading and deploying
-  clearAllRMIRSAndModels: false
+  clearAllRMIRSAndModels: true
 
   # useSeparateTriton when false : Riva server and single Triton server are run in single container
   # useSeparateTriton when true : Riva server and Triton server(s) are deployed in separate pods

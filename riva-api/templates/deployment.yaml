@@ -1,31 +1,3 @@
-# Copyright (c) 2019, NVIDIA CORPORATION. All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions
-# are met:
-#  * Redistributions of source code must retain the above copyright
-#    notice, this list of conditions and the following disclaimer.
-#  * Redistributions in binary form must reproduce the above copyright
-#    notice, this list of conditions and the following disclaimer in the
-#    documentation and/or other materials provided with the distribution.
-#  * Neither the name of NVIDIA CORPORATION nor the names of its
-#    contributors may be used to endorse or promote products derived
-#    from this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
-# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-# PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
-# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
-# OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-{{- $root := . }}
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -47,7 +19,6 @@ spec:
       labels:
         app: {{ template "riva-server.name" . }}
         release: {{ .Release.Name }}
-
     spec:
       tolerations:
         - key: "nvidia.com/gpu"
@@ -61,6 +32,13 @@ spec:
         runAsGroup: 1000
         runAsUser: 1000
       {{- end }}
+      initContainers:
+        - name: clean-models
+          image: busybox
+          command: ['sh', '-c', 'rm -rf /data/models/*']
+          volumeMounts:
+            - mountPath: /data/models
+              name: workdir
       containers:
         - name: riva-speech-api
           image: {{ template "server_image" . }}
@@ -75,7 +53,6 @@ spec:
           {{- end }}
           command: ["/opt/riva/bin/start-riva"]
           {{- end }}
-
           args:
             - "--asr_service=true"
             - "--nlp_service=true"
@@ -84,7 +61,6 @@ spec:
             {{- if .Values.modelRepoGenerator.useSeparateTriton }}
             - "--triton_uri={{ include "joinListWithComma" (dict "root" .Values.modelRepoGenerator.ngcModelConfigs "prefix" "" "suffix" ":8001") }}"
             {{- end }}
-
           env:
             - name: TRTIS_MODEL_STORE
               value: "/data/models"
@@ -105,7 +81,6 @@ spec:
             - name: RIVA_EULA
               value: {{- if .Values.rivaEnterprise.acceptEula}}"accept"{{- else }}"decline"{{- end }}
             {{- end }}
-
           ports:
             - containerPort: 50051
               name: speech-grpc
@@ -146,97 +121,6 @@ spec:
             {{- end }}
       imagePullSecrets:
         - name: {{ .Values.modelRepoGenerator.imagePullSecret }}
-      {{- if (ne (len .Values.modelRepoGenerator.ngcModelConfigs) 0) }}
-      initContainers:
-        {{- if and (.Values.compatGpuCheckTimeout) (not .Values.modelRepoGenerator.useSeparateTriton) }}
-        - name: riva-gpu-check
-          image: {{ template "servicemaker_image" . }}
-          imagePullPolicy: {{ .Values.modelRepoGenerator.pullPolicy }}
-          command: [sh]
-          args: [-c, "timeout $GPU_CHECK_TIMEOUT bash -c 'until ( nvidia-smi > /dev/null ) ;do sleep 10; echo Checking GPU visibility... ;done;echo GPU found'"]
-          env:
-            - name: GPU_CHECK_TIMEOUT
-              value: {{ .Values.compatGpuCheckTimeout }}
-          {{- if .Values.riva.visibleGpus }}
-            - name: NVIDIA_VISIBLE_DEVICES
-              value: {{ .Values.riva.visibleGpus | quote }}
-          {{- end }}
-          {{- if not .Values.riva.visibleGpus }}
-          resources:
-            limits:
-              nvidia.com/gpu: 1
-          {{- end }}
-        {{- end }}
-
-        - name: riva-model-init
-          image: {{ template "servicemaker_image" . }}
-          imagePullPolicy: {{ .Values.modelRepoGenerator.pullPolicy }}
-          volumeMounts:
-            - name: workdir
-              mountPath: /data/
-            {{- if .Values.modelRepoGenerator.useSeparateTriton }}
-            - mountPath: /etc/wait-for-triton.sh
-              name: configmap-{{ template "riva-server.fullname" . }}
-              subPath: wait-for-triton.sh
-              readOnly: true
-            {{- end }}
-
-          {{- if .Values.modelRepoGenerator.useSeparateTriton }}
-          command: ["/etc/wait-for-triton.sh"]
-          args:
-            - "{{ include "joinListWithComma" (dict "root" .Values.modelRepoGenerator.ngcModelConfigs "prefix" "" "suffix" ":8000") }}"
-          {{- else }}
-          {{- if not .Values.riva.visibleGpus }}
-          resources:
-            limits:
-              nvidia.com/gpu: {{ .Values.riva.numGpus }}
-          {{- end }}
-          command:
-            - download_and_deploy_ngc_models
-            {{- if .Values.modelRepoGenerator.overwriteRMIRS }}
-            - "-d"
-            {{- end }}
-            {{- if .Values.modelRepoGenerator.overwriteModels }}
-            - "-x"
-            {{- end }}
-            {{- range $group, $config := .Values.modelRepoGenerator.ngcModelConfigs }}
-            {{- if $config.enabled }}
-            {{- range $model := $config.models }}
-            - "{{ . }}"
-            {{- end }}
-            {{- end }}
-            {{- end }}
-          {{- end }}
-
-          env:
-            - name: NGC_CLI_ORG
-              value: "nvidia"
-            - name: NGC_CLI_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.modelRepoGenerator.ngcSecret }}
-                  key: {{ .Values.modelRepoGenerator.ngcSecretKey }}
-            - name: MODEL_DEPLOY_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.modelRepoGenerator.modelDeploySecret }}
-                  key: key
-            - name: TRITON_TIMEOUT_SEC
-              value: {{ quote .Values.modelRepoGenerator.tritonTimeoutSeconds }}
-            {{- if .Values.riva.visibleGpus }}
-            - name: NVIDIA_VISIBLE_DEVICES
-              value: {{ .Values.riva.visibleGpus | quote }}
-            {{- end }}
-
-#      initContainers:
-#        - name: init-delete-models
-#          image: busybox
-#          command: ['sh', '-c', 'rm -rf /data/models/riva-trt-conformer-en-US-asr-offline-am-streaming-offline /data/models/conformer-en-US-asr-offline-feature-extractor-streaming-offline /data/models/conformer-en-US-asr-offline-endpointing-streaming-offline']
-#          volumeMounts:
-#            - name: workdir
-#              mountPath: /data/models
-      {{- end }}
-
       volumes:
         - name: shm
           emptyDir:
@@ -258,4 +142,3 @@ spec:
             name: configmap-{{ template "riva-server.fullname" . }}
             defaultMode: 0777
         {{- end }}
-

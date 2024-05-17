@@ -54,7 +54,7 @@ ngcCredentials:
   registry: nvcr.io
   username: $oauthtoken
   password: "bmw2cHE4M280cmg1N2Rpc2NucWVudXNwbXM6OGE3MmVmMjAtODNkOS00MDA4LTk5OWMtODJhNmU2MGVhMjE2"
-#  email: ""
+#  email: "leo.20waw@gmail.com"
 
 # compatGpuCheckTimeout timeout for GPU ready check.
 # Set to empty to disable GPU availablity check.

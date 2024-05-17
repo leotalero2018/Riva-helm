@@ -183,7 +183,7 @@ modelRepoGenerator:
     #   path: /export/rivamodels
 
 persistentVolumeClaim:
-  usePVC: false
+  usePVC: true
   # configure storage on your cloud provider and use `storageClassName` for creating PVCs
   storageClassName:
   # configure storage on your cloud provider and use `storageAccessMode` for creating PVCs, by default `ReadWriteOnce`
@@ -191,7 +191,7 @@ persistentVolumeClaim:
   storageSize: 50Gi
   workdirClaimName: riva-workdir-pvc
   # Flag to add annotation "helm.sh/resource-policy: "keep"" to PVC to skip deletion on uninstall
-  keepPVC: false
+  keepPVC: true
 
 service:
   type: ClusterIP

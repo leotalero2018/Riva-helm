@@ -107,7 +107,8 @@ modelRepoGenerator:
       models:
       # asr
       ### Streaming w/ CPU decoder, best throughput configuration
-      - nvidia/riva/rmir_asr_conformer_en_us_str_thr:2.14.0
+      #- nvidia/riva/rmir_asr_conformer_en_us_str_thr:2.14.0
+      - nvidia/riva/rmir_asr_parakeet_0-6b_en_us_str_thr:2.15.0
       ### Streaming w/ CPU decoder, best latency configuration
       # - nvidia/riva/rmir_asr_conformer_en_us_str:2.14.0
       ### Offline w/ CPU decoder

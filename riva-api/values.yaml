@@ -191,7 +191,7 @@ persistentVolumeClaim:
   storageSize: 50Gi
   workdirClaimName: riva-workdir-pvc
   # Flag to add annotation "helm.sh/resource-policy: "keep"" to PVC to skip deletion on uninstall
-  keepPVC: true
+  keepPVC: false
 
 service:
   type: ClusterIP

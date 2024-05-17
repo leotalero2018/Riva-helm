@@ -183,7 +183,7 @@ modelRepoGenerator:
     #   path: /export/rivamodels
 
 persistentVolumeClaim:
-  usePVC: true
+  usePVC: false
   # configure storage on your cloud provider and use `storageClassName` for creating PVCs
   storageClassName:
   # configure storage on your cloud provider and use `storageAccessMode` for creating PVCs, by default `ReadWriteOnce`

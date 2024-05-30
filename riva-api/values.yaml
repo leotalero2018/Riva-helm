@@ -55,7 +55,7 @@ ngcCredentials:
   registry: nvcr.io
   secretName: ngc-credentials
   username: $oauthtoken
-  password:
+  password: password
 
 
 #ngcCredentials:

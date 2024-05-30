@@ -105,7 +105,6 @@ spec:
             - name: RIVA_EULA
               value: {{- if .Values.rivaEnterprise.acceptEula}}"accept"{{- else }}"decline"{{- end }}
             {{- end }}
-
           ports:
             - containerPort: 50051
               name: speech-grpc

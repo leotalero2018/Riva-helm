@@ -50,11 +50,18 @@ rivaEnterprise:
   acceptEula: false
   enabled: false
 
+
 ngcCredentials:
   registry: nvcr.io
+  secretName: ngc-credentials
   username: $oauthtoken
-  password: "bmw2cHE4M280cmg1N2Rpc2NucWVudXNwbXM6OGE3MmVmMjAtODNkOS00MDA4LTk5OWMtODJhNmU2MGVhMjE2"
-#  email: "leo.20waw@gmail.com"
+  password:
+
+
+#ngcCredentials:
+#  registry: nvcr.io
+#  username: $oauthtoken
+#  password: "bmw2cHE4M280cmg1N2Rpc2NucWVudXNwbXM6OGE3MmVmMjAtODNkOS00MDA4LTk5OWMtODJhNmU2MGVhMjE2"
 
 # compatGpuCheckTimeout timeout for GPU ready check.
 # Set to empty to disable GPU availablity check.

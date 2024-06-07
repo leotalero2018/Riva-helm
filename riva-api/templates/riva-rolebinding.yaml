@@ -7,7 +7,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: hub
-    namespace: jupyterhub-system
+    namespace: jupyterhub
 roleRef:
   kind: Role
   name: manage-pods-and-pvcs

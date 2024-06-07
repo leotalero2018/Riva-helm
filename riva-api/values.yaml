@@ -240,7 +240,7 @@ loadbalancer:
 
 
 networkPolicy:
-  enabled: true
+  enabled: false
   namespace: jupyterhub
 
 rbac:

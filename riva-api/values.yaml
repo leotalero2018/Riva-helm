@@ -239,10 +239,10 @@ loadbalancer:
   ipRange: 10.42.0.190-10.42.0.192
 
 
-networkPolicy:
-  enabled: false
-  namespace: jupyterhub
-
-rbac:
-  create: false
+#networkPolicy:
+#  enabled: false
+#  namespace: jupyterhub
+#
+#rbac:
+#  create: false
 

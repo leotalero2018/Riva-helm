@@ -244,5 +244,5 @@ networkPolicy:
   namespace: jupyterhub
 
 rbac:
-  create: true
+  create: false
 

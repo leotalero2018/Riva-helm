@@ -237,3 +237,8 @@ loadbalancer:
   useMetalLB: false
   # the range of IP's available to your cluster. (ipRange: 192.168.1.240-192.168.1.250)
   ipRange: 10.42.0.190-10.42.0.192
+
+
+networkPolicy:
+  enabled: true
+  namespace: jupyterhub

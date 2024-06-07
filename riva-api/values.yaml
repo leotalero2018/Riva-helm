@@ -242,3 +242,7 @@ loadbalancer:
 networkPolicy:
   enabled: true
   namespace: jupyterhub
+
+rbac:
+  create: true
+
